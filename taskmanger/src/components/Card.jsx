@@ -5,7 +5,7 @@ import { FilePenLine } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../context/UserContext";
 import axios from "axios";
-import { TaskContext } from "../context/taskContext";
+import { TaskContext } from "../context/TaskContext";
 
 const Card = ({
   title,
