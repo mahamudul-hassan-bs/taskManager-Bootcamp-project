@@ -1,27 +1,44 @@
+import axios from "axios";
 import React, { useState } from "react";
+import { useContext } from "react";
+import { UserContext } from "../context/UserContext";
+import { TaskContext } from "../context/taskContext";
 
 const Form = () => {
+  const { backendUrl, token } = useContext(UserContext);
+  const { setTasks, tasks } = useContext(TaskContext);
   const [title, setTittle] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState("Office");
   const [priority, setPriority] = useState("");
 
-  const handleAdd = (e) => {
+  const handleAdd = async (e) => {
     e.preventDefault();
-    console.log(title);
-    console.log(description);
-    console.log(dueDate);
-    console.log(category);
-    console.log(priority);
+
+    const res = await axios.post(
+      backendUrl + "/api/task/addTask",
+      {
+        title,
+        description,
+        priority,
+        category,
+        dueDate,
+      },
+      { headers: { token } }
+    );
+    if (res.data.success) {
+      const newTask = res.data.newTask;
+      setTasks([...tasks, newTask]);
+    }
+
     setTittle("");
     setDescription("");
     setDueDate("");
     setPriority("");
-    setCategory("");
   };
   return (
-    <div className="container">
+    <div className="">
       <form className="w-full max-w-lg" onSubmit={handleAdd}>
         <div className="flex flex-wrap -mx-3 mb-2">
           <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">

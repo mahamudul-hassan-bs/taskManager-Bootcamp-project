@@ -1,5 +1,10 @@
 import { useState } from "react";
-
+import axios from "axios";
+import { useContext } from "react";
+import { UserContext } from "../context/UserContext";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [name, setName] = useState("");
@@ -7,15 +12,61 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleLogin = (e) => {
+  const navigate = useNavigate();
+  const { setUser, setToken, backendUrl, token } = useContext(UserContext);
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    console.log(email, password);
+
+    const res = await axios.post(backendUrl + "/api/user/login", {
+      email,
+      password,
+    });
+
+    if (res.data.success) {
+      setToken(res.data.token);
+      setUser(res.data);
+      localStorage.setItem("token", res.data.token);
+      toast.success(res.data.message);
+      setEmail("");
+      setPassword("");
+      navigate("/tasks");
+    } else {
+      toast.error(res.data.message);
+    }
   };
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
+
     console.log(name, email, password, confirmPassword);
+    if (password === confirmPassword) {
+      const res = await axios.post(backendUrl + "/api/user/register", {
+        name,
+        email,
+        password,
+      });
+
+      if (res.data.success) {
+        toast.success("Registered Successfully");
+        setName("");
+        setEmail("");
+        setPassword("");
+        setConfirmPassword("");
+        setIsLogin(true);
+      } else {
+        toast.error(res.data.message);
+      }
+    } else {
+      toast.error("Password didn't match!");
+    }
   };
+
+  useEffect(() => {
+    if (token) {
+      navigate("/tasks");
+    }
+  }, [token]);
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className=" p-6 w-full max-w-sm">
@@ -32,6 +83,7 @@ const Login = () => {
             <input
               type="email"
               name="email"
+              value={email}
               required
               placeholder="Email"
               onChange={(e) => setEmail(e.target.value)}
@@ -40,6 +92,7 @@ const Login = () => {
             <input
               type="password"
               name="password"
+              value={password}
               required
               placeholder="Password"
               onChange={(e) => setPassword(e.target.value)}
@@ -88,6 +141,7 @@ const Login = () => {
               placeholder="Name"
               onChange={(e) => setName(e.target.value)}
               className="w-full p-2 border border-gray-800"
+              value={name}
             />
             <input
               type="email"
@@ -96,6 +150,7 @@ const Login = () => {
               placeholder="Email"
               onChange={(e) => setEmail(e.target.value)}
               className="w-full p-2 border border-gray-800"
+              value={email}
             />
             <input
               type="password"
@@ -104,6 +159,7 @@ const Login = () => {
               placeholder="Password"
               onChange={(e) => setPassword(e.target.value)}
               className="w-full p-2 border border-gray-800"
+              value={password}
             />
             <input
               type="password"
@@ -112,6 +168,7 @@ const Login = () => {
               placeholder="Confirm Password"
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="w-full p-2 border border-gray-800"
+              value={confirmPassword}
             />
             <div className="w-full flex justify-between">
               <a
