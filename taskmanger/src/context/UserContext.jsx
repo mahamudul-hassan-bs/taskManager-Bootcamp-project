@@ -10,6 +10,7 @@ export const UserContext = createContext();
 const UserContextProvider = (props) => {
   const [user, setUser] = useState("");
   const [token, setToken] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -49,6 +50,8 @@ const UserContextProvider = (props) => {
     backendUrl,
     token,
     setToken,
+    loading,
+    setLoading,
   };
 
   return (

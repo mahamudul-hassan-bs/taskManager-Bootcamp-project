@@ -16,8 +16,7 @@ const login = async (req, res) => {
 
     if (user) {
       const checkPassword = await bcrypt.compare(password, user.password);
-      console.log(password);
-      console.log(user.password);
+
       if (checkPassword) {
         res.status(200).json({
           success: true,
@@ -57,7 +56,6 @@ const register = async (req, res) => {
       });
     }
     const findUser = await User.findOne({ email });
-    console.log(findUser);
 
     if (findUser) {
       return res.status(200).json({

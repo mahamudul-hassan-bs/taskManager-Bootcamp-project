@@ -3,6 +3,7 @@ import axios from "axios";
 import { useContext } from "react";
 import { UserContext } from "../context/UserContext";
 import { toast } from "react-toastify";
+import { PropagateLoader } from "react-spinners";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 const Login = () => {
@@ -13,17 +14,19 @@ const Login = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const navigate = useNavigate();
-  const { setUser, setToken, backendUrl, token } = useContext(UserContext);
+  const { setUser, setToken, backendUrl, token, loading, setLoading } =
+    useContext(UserContext);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+    setLoading(true);
     const res = await axios.post(backendUrl + "/api/user/login", {
       email,
       password,
     });
 
     if (res.data.success) {
+      setLoading(false);
       setToken(res.data.token);
       setUser(res.data);
       localStorage.setItem("token", res.data.token);
@@ -32,6 +35,7 @@ const Login = () => {
       setPassword("");
       navigate("/tasks");
     } else {
+      setLoading(false);
       toast.error(res.data.message);
     }
   };
@@ -39,8 +43,8 @@ const Login = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    console.log(name, email, password, confirmPassword);
     if (password === confirmPassword) {
+      setLoading(true);
       const res = await axios.post(backendUrl + "/api/user/register", {
         name,
         email,
@@ -48,6 +52,7 @@ const Login = () => {
       });
 
       if (res.data.success) {
+        setLoading(false);
         toast.success("Registered Successfully");
         setName("");
         setEmail("");
@@ -55,9 +60,11 @@ const Login = () => {
         setConfirmPassword("");
         setIsLogin(true);
       } else {
+        setLoading(false);
         toast.error(res.data.message);
       }
     } else {
+      setLoading(false);
       toast.error("Password didn't match!");
     }
   };
@@ -119,7 +126,15 @@ const Login = () => {
               type="submit"
               className="w-full bg-black text-white py-2 rounded"
             >
-              Login
+              {loading ? (
+                <PropagateLoader
+                  color="#ffffff"
+                  size={10}
+                  className="p-4 text-center"
+                />
+              ) : (
+                "Login"
+              )}
             </button>
           </form>
         )}
@@ -191,7 +206,15 @@ const Login = () => {
               type="submit"
               className="w-full bg-black text-white py-2 rounded"
             >
-              Sign Up
+              {loading ? (
+                <PropagateLoader
+                  color="#ffffff"
+                  size={10}
+                  className="p-4 text-center"
+                />
+              ) : (
+                "Sign Up"
+              )}
             </button>
           </form>
         )}

@@ -53,7 +53,7 @@ const deleteTask = async (req, res) => {
     }
 
     const task = await Task.findOne({ _id: id });
-    // console.log(task.userId);
+
     if (task) {
       if (task.userId.toString() === userId) {
         const deleteTask = await Task.findByIdAndDelete(id);
@@ -109,7 +109,7 @@ const updateTask = async (req, res) => {
       status,
     };
     const task = await Task.findOne({ _id: id });
-    // console.log(task.userId);
+
     if (task) {
       if (task.userId.toString() === userId) {
         const updateTask = await Task.findByIdAndUpdate(id, taskData, {
@@ -170,8 +170,6 @@ const allTask = async (req, res) => {
 
 const taskStats = async (req, res) => {
   const userId = req.userId;
-
-  console.log(userId);
 
   try {
     const stats = await Task.aggregate([
